@@ -7,30 +7,40 @@ const GeneralCard = ({
   or,
   signupBtnText,
   countries,
+  currencies,
   onChanged,
   selectedCountry,
+  selectedCurrency,
   isCurrency,
   input,
   saveBtnText,
 }) => {
 
-  selectedCountry.currencies;
+  // selectedCountry.currencies;
 
  
-var selectedOption;
+// var selectedOption;
+
 
 // if(isCurrency){
-const getName = (item) => {
-  // Loop through keys of each object and return the first found `nameG`
-  for (const key in item) {
-    return item[key];
-  }
-  return "No nameG found"; // Default if no `nameG` exists
-};
+// const getName = (item) => {
+//   // Loop through keys of each object and return the first found `nameG`
+//   for (const key in item) {
+//     return item[key];
+//   }
+//   return "No name found"; // Default if no `nameG` exists
+// };
 
-selectedOption=getName(selectedCountry.currencies);
-console.log("get currency name ======================"+selectedOption.name);
+// selectedOption=getName(selectedCountry.currencies);
+// countries.map((c)=> {
+  // console.log("map country name ======================"+getName(c.currencies).name);
+// });
+
+console.log("get currency obj ======================"+currencies);
 // }
+
+
+
   return (
     <div className={className}>
       <h4>{title}</h4>
@@ -56,14 +66,11 @@ console.log("get currency name ======================"+selectedOption.name);
       <select
       className="form-select border-0 shadow-none"
       onChange={onChanged}
-      value={selectedOption.name }
+      value={selectedCurrency.name }
      >
-      
-      
-      {countries.map((country) => (
-        
-        <option key={getName(country).name} value={getName(country).name}>
-          {selectedOption.name}
+      {currencies.map((c) => (
+        <option key={c.name} value={c.name}>
+          {c.name}
         </option>
       ))}
 
@@ -101,6 +108,8 @@ GeneralCard.propTypes = {
   input: PropTypes.string,
   saveBtnText: PropTypes.string,
   isCurrency: PropTypes.bool,
+  currencies:PropTypes.array,
+  selectedCurrency:PropTypes.object,
 };
 
 export default GeneralCard;

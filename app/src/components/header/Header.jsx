@@ -4,34 +4,50 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import GeneralCard from "./GeneralCard";
+// import { symbol } from "prop-types";
+import currenciesList from "./Currency";
+
 const Header = () => {
   const [showLocationCard, setShowLocationCard] = useState(false);
   const [countries, setCountries] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
   const [currencyAndLang, setCurrenceyAndLang] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState({
     name: "Pakistan",
     flag: "", 
+  });
+    const [selectedCurrency, setSelectedCurrency] = useState({
+    name: "Pakistan",
+    symbol: "", 
   });
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         const res = await axios.get("https://restcountries.com/v3.1/all");
-        console.log("res======================"+res.data);
-
-        const countryList = res.data.map((country) => ({
-          name: country.name.common,
-          flag: country.flags?.svg || "",
-          currencies:country.currencies,
-        }));
-        
+///set country list
+        const countryList = res.data.map((country)=>{
+          if(country.name!="Antarctica"){
+ return {
+            name: country.name.common,
+            flag: country.flags?.svg || "",
+            currencies: country.currencies,
+          }
+          }
+         });
         setCountries(countryList);
-        console.log("countries======================"+countries);
+      //  setCurrencies(currenciesList);
 
         const pakistan = countryList.find((c) => c.name === "Pakistan");
         if (pakistan) {
           setSelectedCountry(pakistan);
         }
+
+        const pakistanCurrency = currenciesList.find((c) => c.name === "Pakistan");
+        if (pakistanCurrency) {
+          setSelectedCurrency(pakistan);
+        }
+        
       } catch (error) {
         console.error("Error fetching countries:", error);
       }
@@ -40,9 +56,27 @@ const Header = () => {
   }, []);
 
   const onchanged = (e) => {
-    console.log("e.target.value======================"+e.target.value);
+    // console.log("e.target.value======================"+e.target.value);
     const selected = countries.find((c) => c.name === e.target.value);
     setSelectedCountry(selected);
+  };
+
+//get name for currency
+  const getCurrencyName = (item) => {
+    // console.log("recieved======================"+JSON.stringify(item));
+Object.entries(item.currencies).forEach(([key, value]) => {
+    // console.log(`----------------${item.currencies[key].symbol}`);
+    return item.currencies[key];
+});
+  return "No name found"; // Default if no `nameG` exists
+};
+
+///for currency onChange
+ const onCurrencychange = (e) => {
+    const selected = currenciesList.find((c) =>c.name === e.target.value);
+    console.log("set currenc y name=================="  +"-------------name: "+JSON.stringify(selected));
+
+    setSelectedCurrency(selected);
   };
 
   const navigate = useNavigate();
@@ -93,15 +127,15 @@ const Header = () => {
           onMouseEnter={()=>setCurrenceyAndLang(true)}
           onMouseLeave={()=>setCurrenceyAndLang(false)}
           
-          >Currency-PKR
+          >Currency-{selectedCurrency.symbol?? "Rs"}
           {currencyAndLang? 
           <GeneralCard
           className="top-50 z-50 position-absolute bg-wheat text-black translate-middle-x d-flex flex-column shadow-lg rounded p-4 w-25"
           title="Specify Your Currency"
           isCurrency={true}
-          countries={countries}
-          onChanged={onchanged}
-          selectedCountry={selectedCountry}
+          currencies={currenciesList}
+          onChanged={onCurrencychange}
+          selectedCurrency={selectedCurrency}
           saveBtnText="Save"
           />:<></>}
           </span>
