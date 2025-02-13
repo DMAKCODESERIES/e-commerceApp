@@ -87,7 +87,7 @@ const Header = () => {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-black fixed-top">
-      <div className="container-fluid d-flex justify-content-between align-items-center px-3">
+      <div className="container-fluid d-flex justify-content-between align-items-center px-3 overflow-hidden">
         <a className="navbar-brand text-white" href="/">
           <img src="/logo.jpg" height={40} width={40} alt="Logo" />
         </a>

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const categorySchema = new mongoose.Schema({
     name: String,
     description: String,
-    // image: String,
+    image: String,
 
 })
 // categories table in the database

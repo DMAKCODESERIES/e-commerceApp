@@ -18,7 +18,7 @@ const SignUp = () => {
     e.preventDefault();
     setLoading(true)
     try {
-      const res = await axios.post('http://localhost:3000/add', { name, email, password });
+      const res = await axios.post('http://localhost:8000/api/user/register', { name, email, password });
       if (res) {
         console.log("user added successfully")
         setLoading(false)

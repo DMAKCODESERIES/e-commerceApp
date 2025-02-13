@@ -1,34 +1,33 @@
-///**************** post category
 import Category from "../models/Catagory.Model.js";
-const addCategarios=( async (req, res) => {
+
+const addCategories = async (req, res) => {
     try {
         const { name, description } = req.body;
-        console.log("New category data received", ({ name, description }));
-        console.log(req.body)
+        const image = req.file ? req.file.path : null; 
 
-        if (!name || !description) {
+        console.log("New category data received", { name, description, image });
+
+        if (!name || !description || !image) {
             return res.status(400).send({ message: "All fields are required" });
         }
-        const category = new Category({ name, description });
+
+        const category = new Category({ name, description, image });
         await category.save();
-        console.log(category)
-        res.status(200).send(
-            {
-                "message": category,
-                "timestamp": new Date().toISOString()
-            }
-        );
+
+        res.status(200).send({
+            message: category,
+            timestamp: new Date().toISOString()
+        });
 
     } catch (error) {
         console.log("Error", error);
         res.status(500).send("Internal server error");
     }
-})
+};
 
-///**************delete category by id
-const deleteCatagory=( async (req, res) => {
-    const id = req.params.id;
+const deleteCategory = async (req, res) => {
     try {
+        const id = req.params.id;
         if (!id) {
             return res.status(400).send({ message: "Invalid category ID" });
         }
@@ -36,18 +35,15 @@ const deleteCatagory=( async (req, res) => {
         if (!category) {
             return res.status(404).send({ message: "Category not found" });
         }
-        await Category.findByIdAndDelete(id)
-        res.status(200).json({ message: "Category deleted successfully" })
-        console.log("Category deleted successfully")
+        await Category.findByIdAndDelete(id);
+        res.status(200).json({ message: "Category deleted successfully" });
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal server error");
     }
-})
+};
 
-///*************get all categories */
-
-const getAllCategories=( async (req, res) => {
+const getAllCategories = async (req, res) => {
     try {
         const categories = await Category.find();
         res.status(200).send(categories);
@@ -55,13 +51,11 @@ const getAllCategories=( async (req, res) => {
         console.log(error);
         res.status(500).send("Internal server error");
     }
-})
+};
 
-///**************update category by id
-
-const updateCategories=( async (req, res) => {
-    const id = req.params.id;
+const updateCategory = async (req, res) => {
     try {
+        const id = req.params.id;
         if (!id) {
             return res.status(400).send({ message: "Invalid category ID" });
         }
@@ -69,11 +63,11 @@ const updateCategories=( async (req, res) => {
         if (!category) {
             return res.status(404).send({ message: "Category not found" });
         }
-        res.status(200).json(category)
-        console.log("Category updated successfully")
+        res.status(200).json(category);
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal server error");
     }
-})
-export { addCategarios ,deleteCatagory, getAllCategories, updateCategories  }
+};
+
+export { addCategories, deleteCategory, getAllCategories, updateCategory };

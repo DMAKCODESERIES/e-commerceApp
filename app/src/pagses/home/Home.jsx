@@ -5,7 +5,7 @@ import Catagory from "../../components/catagoryies/Catagory"
 const Home = () => {
   return (
     <>
-      <div>
+      <div >
         <Header />
         <Hero />
         < Catagory />

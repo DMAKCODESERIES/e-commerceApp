@@ -16,7 +16,7 @@ export default function LoginForm() {
     e.preventDefault();
     try {
       setLoading(true)
-      const res = await axios.post('http://localhost:3000/api/login', { email, password });
+      const res = await axios.post('http://localhost:8000/api/user/login"', { email, password });
       console.log(res.data)
       if (res) {
         console.log("User logged in successfully")
