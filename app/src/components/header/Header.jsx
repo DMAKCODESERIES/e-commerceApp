@@ -1,11 +1,8 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import GeneralCard from "./GeneralCard";
-// import { symbol } from "prop-types";
-import currenciesList from "./Currency";
 
 const Header = () => {
   const [showLocationCard, setShowLocationCard] = useState(false);
@@ -14,70 +11,77 @@ const Header = () => {
   const [currencyAndLang, setCurrenceyAndLang] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState({
     name: "Pakistan",
-    flag: "", 
+    flag: "",
   });
-    const [selectedCurrency, setSelectedCurrency] = useState({
-    name: "Pakistan",
-    symbol: "", 
+  const [selectedCurrency, setSelectedCurrency] = useState({
+    cname: "Pakistan",
+    csymbol: "Rs",
   });
 
   useEffect(() => {
     const fetchCountries = async () => {
       try {
         const res = await axios.get("https://restcountries.com/v3.1/all");
-///set country list
-        const countryList = res.data.map((country)=>{
-          if(country.name!="Antarctica"){
- return {
-            name: country.name.common,
-            flag: country.flags?.svg || "",
-            currencies: country.currencies,
-          }
-          }
-         });
-        setCountries(countryList);
-      //  setCurrencies(currenciesList);
+        const countryList = res.data.map((c) => ({
+          name: c.name.common,
+          flag: c.flags?.svg || "",
+          currencies: c.currencies
+            ? {
+              code: Object.keys(c.currencies)[0] || "",
+              cname: Object.values(c.currencies)[0]?.name || "",
+              csymbol: Object.values(c.currencies)[0]?.symbol || "",
+            }
+            : null,
+        }));
 
+        setCountries(countryList);
+
+        const filteredCurrencies = countryList
+          .filter((c) => c.currencies)
+          .map((c) => ({
+            cname: c.currencies.cname,
+            csymbol: c.currencies.csymbol,
+          }));
+
+        setCurrencies(filteredCurrencies);
+
+        // Set default country and currency
         const pakistan = countryList.find((c) => c.name === "Pakistan");
         if (pakistan) {
           setSelectedCountry(pakistan);
+          setSelectedCurrency({
+            cname: pakistan.currencies?.cname || "Pakistan",
+            csymbol: pakistan.currencies?.csymbol || "Rs",
+          });
         }
-
-        const pakistanCurrency = currenciesList.find((c) => c.name === "Pakistan");
-        if (pakistanCurrency) {
-          setSelectedCurrency(pakistan);
-        }
-        
       } catch (error) {
         console.error("Error fetching countries:", error);
       }
     };
+
     fetchCountries();
   }, []);
 
   const onchanged = (e) => {
-    // console.log("e.target.value======================"+e.target.value);
     const selected = countries.find((c) => c.name === e.target.value);
     setSelectedCountry(selected);
+
+    if (selected && selected.currencies) {
+      setSelectedCurrency({
+        cname: selected.currencies.cname,
+        csymbol: selected.currencies.csymbol,
+      });
+    }
   };
 
-//get name for currency
-  const getCurrencyName = (item) => {
-    // console.log("recieved======================"+JSON.stringify(item));
-Object.entries(item.currencies).forEach(([key, value]) => {
-    // console.log(`----------------${item.currencies[key].symbol}`);
-    return item.currencies[key];
-});
-  return "No name found"; // Default if no `nameG` exists
-};
 
-///for currency onChange
- const onCurrencychange = (e) => {
-    const selected = currenciesList.find((c) =>c.name === e.target.value);
-    console.log("set currenc y name=================="  +"-------------name: "+JSON.stringify(selected));
-
-    setSelectedCurrency(selected);
-  };
+  const onCurrencychange = useCallback(
+    (e) => {
+      const selected = currencies.find((c) => c.cname === e.target.value);
+      setSelectedCurrency(selected);
+    },
+    [currencies]
+  );
 
   const navigate = useNavigate();
 
@@ -87,10 +91,10 @@ Object.entries(item.currencies).forEach(([key, value]) => {
         <a className="navbar-brand text-white" href="/">
           <img src="/logo.jpg" height={40} width={40} alt="Logo" />
         </a>
-       
-        <div className="d-flex align-items-center position-realative w-full" id="navbarSupportedContent">
+
+        <div className="d-flex align-items-center position-relative w-full" id="navbarSupportedContent">
           <div
-            className="navbar-nav d-flex align-items-center "
+            className="navbar-nav d-flex align-items-center"
             onMouseEnter={() => setShowLocationCard(true)}
             onMouseLeave={() => setShowLocationCard(false)}
           >
@@ -105,41 +109,42 @@ Object.entries(item.currencies).forEach(([key, value]) => {
               />
             )}
 
-            {showLocationCard && (              
-              // set card details
-              <GeneralCard 
-              className="top-50 z-50 position-absolute bg-wheat text-black translate-middle-x d-flex flex-column shadow-lg rounded p-4 w-25"
-              title="Specify Your Location"
-              description="Shipping options and fees vary based on your location"
-              signupBtnText=
-              "Sign Up"
-              or="or"
-              countries={countries}
-              onChanged={onchanged}
-              selectedCountry={selectedCountry}
-              input="Enter zip code"
-              saveBtnText="Save"
+            {showLocationCard && (
+              <GeneralCard
+                className="top-50 z-50 position-absolute bg-white text-black translate-middle-x d-flex flex-column shadow-lg rounded p-4 w-75 mt-2"
+                title="Specify Your Location"
+                description="Shipping options and fees vary based on your location"
+                signupBtnText="Sign Up"
+                or="or"
+                countries={countries}
+                onChanged={onchanged}
+                selectedCountry={selectedCountry}
+                input="Enter zip code"
+                saveBtnText="Save"
               />
             )}
           </div>
-         {/* set current language */}
-          <span className="text-white ms-3" 
-          onMouseEnter={()=>setCurrenceyAndLang(true)}
-          onMouseLeave={()=>setCurrenceyAndLang(false)}
-          
-          >Currency-{selectedCurrency.symbol?? "Rs"}
-          {currencyAndLang? 
-          <GeneralCard
-          className="top-50 z-50 position-absolute bg-wheat text-black translate-middle-x d-flex flex-column shadow-lg rounded p-4 w-25"
-          title="Specify Your Currency"
-          isCurrency={true}
-          currencies={currenciesList}
-          onChanged={onCurrencychange}
-          selectedCurrency={selectedCurrency}
-          saveBtnText="Save"
-          />:<></>}
+
+          {/* Set current currency */}
+          <span
+            className="text-white ms-3"
+            onMouseEnter={() => setCurrenceyAndLang(true)}
+            onMouseLeave={() => setCurrenceyAndLang(false)}
+          >
+            Currency - {selectedCurrency.csymbol ?? "Rs"}
+            {currencyAndLang && (
+              <GeneralCard
+                className="top-50 z-50 position-absolute bg-white text-black translate-middle-x d-flex flex-column shadow-lg rounded p-4 w-75 mt-2"
+                title="Specify Your Currency"
+                isCurrency
+                currencies={currencies}
+                onChanged={onCurrencychange}
+                selectedCurrency={selectedCurrency}
+                saveBtnText="Save"
+              />
+            )}
           </span>
-        
+
           <i className="bi bi-cart text-white fs-5 mx-3"></i>
           <button className="btn text-white fs-6 mx-2" onClick={() => navigate("/login")}>
             Sign In
@@ -152,8 +157,6 @@ Object.entries(item.currencies).forEach(([key, value]) => {
           </button>
         </div>
       </div>
-   
-
     </nav>
   );
 };

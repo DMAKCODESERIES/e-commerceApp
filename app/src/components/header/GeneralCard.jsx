@@ -16,39 +16,15 @@ const GeneralCard = ({
   saveBtnText,
 }) => {
 
-  // selectedCountry.currencies;
-
- 
-// var selectedOption;
-
-
-// if(isCurrency){
-// const getName = (item) => {
-//   // Loop through keys of each object and return the first found `nameG`
-//   for (const key in item) {
-//     return item[key];
-//   }
-//   return "No name found"; // Default if no `nameG` exists
-// };
-
-// selectedOption=getName(selectedCountry.currencies);
-// countries.map((c)=> {
-  // console.log("map country name ======================"+getName(c.currencies).name);
-// });
-
-console.log("get currency obj ======================"+currencies);
-// }
-
-
 
   return (
     <div className={className}>
       <h4>{title}</h4>
       <p className="fs-5">{description}</p>
-      {isCurrency?<></>: <button  className="btn btn-warning text-white fs-6 px-3 rounded-pill w-100">
+      {isCurrency ? <></> : <button className="btn btn-warning text-white fs-6 px-3 rounded-pill w-100">
         {signupBtnText}
       </button>}
-     
+
       <p className="text-center text-muted small my-3">{or}</p>
       <div className="d-flex align-items-center border rounded p-2">
         {selectedCountry?.flag && (
@@ -60,35 +36,35 @@ console.log("get currency obj ======================"+currencies);
             alt="flag"
           />
         )}
-       {/* check if currency is selected */}
-       { 
-       isCurrency?              
-      <select
-      className="form-select border-0 shadow-none"
-      onChange={onChanged}
-      value={selectedCurrency.name }
-     >
-      {currencies.map((c) => (
-        <option key={c.name} value={c.name}>
-          {c.name}
-        </option>
-      ))}
+        {/* check if currency is selected */}
+        {
+          isCurrency ?
+            <select
+              className="form-select border-0 shadow-none"
+              onChange={onChanged}
+              value={selectedCurrency.cname}
+            >
+              {currencies.map((c, index) => (
+                <option key={`${c.cname}${index}`} value={c.cname}>
+                  {c.cname}
+                </option>
+              ))}
 
-           </select>:
-           ///coutnry dropdown
- <select
- className="form-select border-0 shadow-none"
- onChange={onChanged}
- value={selectedCountry.name }
->
- {countries.map((country) => (
-   <option key={country.flag} value={country.name}>
-     {country.name}
-   </option>
- ))}
-      </select>}
+            </select> :
+            ///coutnry dropdown
+            <select
+              className="form-select border-0 shadow-none"
+              onChange={onChanged}
+              value={selectedCountry.name}
+            >
+              {countries.map((country) => (
+                <option key={country.flag} value={country.name}>
+                  {country.name}
+                </option>
+              ))}
+            </select>}
       </div>
-      <div>{ isCurrency? <></> :  <input className=" my-3 form-control" placeholder={input}/>}</div>
+      <div>{isCurrency ? <></> : <input className=" my-3 form-control" placeholder={input} />}</div>
       <button className="btn btn-warning text-white fs-6 px-3 rounded-pill w-100 mt-3">
         {saveBtnText}
       </button>
@@ -108,8 +84,8 @@ GeneralCard.propTypes = {
   input: PropTypes.string,
   saveBtnText: PropTypes.string,
   isCurrency: PropTypes.bool,
-  currencies:PropTypes.array,
-  selectedCurrency:PropTypes.object,
+  currencies: PropTypes.array,
+  selectedCurrency: PropTypes.object,
 };
 
 export default GeneralCard;
